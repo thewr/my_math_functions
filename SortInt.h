@@ -14,31 +14,32 @@ class STACK
 public:
 	STACK();	//constructor
 	~STACK();		//destructor
-	int IsFull();
-	int GetTop();
-	int Pop();
-	void Push(int Element);
-	int Empty() { if (top == -1) { return -1; } else { return 0; } };
-	int CurrSize() { return(top + 1); };
+	int full();
+	int top();
+	int pop();
+	void push(int Element);
+	int empty() { if (s_top == -1) { return -1; } else { return 0; } };
+	int size() { return(s_top + 1); };
 
 
 	void print();	//print array
 	//void insert(int key);  //insert into array
 	void sortA();	//sort array in ascending order
-	void getStats();  //print stats
-	void calStats();
+	void printStats();  //print stats
+
+	bool isWhole(const double & val);
 
 	//// stat functions
 	float accumulate();
 	double quartile(int selection);
 	double average();
 	double stdev();
-	//void med_abs_diff();*/
+	double mad();
 
 private:
 	int *array_;
 	int capacity;
-	int top, count;
+	int s_top;
 };
 
 

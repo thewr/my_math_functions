@@ -14,22 +14,17 @@ using namespace std;
 int main()
 {
 	STACK s;
-	//s.print();
-	s.sortA();
-	s.print();
-//	cout << "\t Top Element of Stack = " << s.GetTop() << endl;
-//	cout << "\t After pop = " << s.Pop() << endl;
-//	cout << "\t Top Element of Stack = " << s.GetTop() << endl;
-	//s.print();
-	s.calStats();
-	s.getStats();
-
+	int val, max = 5;
+	for (int i = 0; i < max; i++)
+	{
+		cout << "data#" << i+1 <<": ";
+		cin >> val;
+		s.push(val);
+	}
 
 	s.print();
-	s.calStats();
-	s.getStats();
+	s.printStats();
 
-	
 	system("pause");
 	return 0;
 }
