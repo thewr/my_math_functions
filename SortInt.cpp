@@ -84,12 +84,12 @@ void STACK::sortA()
 
 double STACK::quartile(int selection) 
 {
-	double Q1, Q2, Q3;
-	double k = (-0.25*selection + 1)*size();
 	sortA();
 
+	double k = (-0.25*selection + 1)*size();
 	if (selection == 1)
 	{
+		double Q1;
 		if (isWhole(k))
 			Q1 = (array_[static_cast<int>(ceil(k))] + array_[static_cast<int>(ceil(k)) - 1]) / 2.0;
 		else
@@ -99,6 +99,7 @@ double STACK::quartile(int selection)
 	}
 	else if (selection == 2)
 	{
+		double Q2;
 		if (isWhole(k))
 			Q2 = (array_[static_cast<int>(ceil(k))] + array_[static_cast<int>(ceil(k)) - 1]) / 2.0;
 		else
@@ -108,6 +109,7 @@ double STACK::quartile(int selection)
 	}
 	else if (selection == 3)
 	{
+		double Q3;
 		if (isWhole(k))
 			Q3 = (array_[static_cast<int>(ceil(k))] + array_[static_cast<int>(ceil(k)) - 1]) / 2.0;
 		else
@@ -139,7 +141,7 @@ void STACK::printStats()
 	cout << "\t\t\t|" << " Sum = " << accumulate() << endl;
 	cout << "\t\t\t|" << " Mean = " << average() << endl;
 	cout << "\t\t\t|" << " Q1 = " << quartile(1) << endl;
-	cout << "\t\t\t|" << " Q2 = " << quartile(2) << endl;
+	cout << "\t\t\t|" << " Median = " << quartile(2) << endl;
 	cout << "\t\t\t|" << " Q3 = " << quartile(3) << endl;
 	cout << "\t\t\t|" << " Std = " << stdev() << endl;
 	cout << "\t\t\t|" << " Var = " << stdev() * stdev() << endl;
@@ -158,43 +160,58 @@ float STACK::accumulate()
 	return sum;
 }
 
-double STACK::average() 
+float STACK::average() 
 {
-	return accumulate() / size();
+	return accumulate() / (float)size();
 }
 
 double STACK::stdev()
 {
-	double result;
-	float tmp, sumX2 = 0;
+	float x_d, x_var_sum = 0;
+	float x_bar = average();
 	for (int i = 0; i < size();i++)
 	{
-		tmp = array_[i] * array_[i];
-		sumX2 = sumX2 + tmp;
+		x_d = array_[i] - x_bar;
+		x_var_sum = x_var_sum + pow(x_d,2.0);
 	}
-	result = sqrt((sumX2/size()) - pow(average(),2.0));
-	return result;
+	return sqrt(x_var_sum/(float)(size()-1));
 }
 
-double STACK::mad()
+float STACK::mad()
 {
-	double *tmp;
-	tmp = new double[capacity];
+	float *T;
+	T = new float[capacity];
 
-	double Q2 = quartile(2);
+	double median = quartile(2);
 
 	for (int i = 0; i < size();i++)
 	{
-		tmp[i] = abs(array_[i] - Q2);
+		T[i] = abs(array_[i] - median);
 	}
 
-	if (size() % 2 == 0) //EVEN COUNT
+	//cout << "------------------ sort function evoked --------------------\n";
+	float tmp;
+	for (int i = 0; i < size(); i++)
 	{
-		return (tmp[size() / 2 - 1] + tmp[(size() / 2)]) / 2;
+		for (int j = 0; j < size(); j++)
+		{
+			if (T[i] > T[j])
+			{
+				tmp = T[i];     //address of *ai given to tmp
+				T[i] = T[j];	   //address of *ai given to *aj
+				T[j] = tmp;	   //address of tmp given to *aj
+			}
+		}
 	}
-	else //ODD COUNT
+
+	float k = 0.5*size();
+	if (isWhole(k))
 	{
-		return tmp[size() / 2];
+		return (T[static_cast<int>(ceil(k))] + T[static_cast<int>(ceil(k)) - 1]) / 2.0;
+	}
+	else
+	{
+		return T[static_cast<int>(k)];
 	}
 }
 

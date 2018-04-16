@@ -32,9 +32,9 @@ public:
 	//// stat functions
 	float accumulate();
 	double quartile(int selection);
-	double average();
+	float average();
 	double stdev();
-	double mad();
+	float mad();
 
 private:
 	int *array_;

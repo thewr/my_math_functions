@@ -8,61 +8,103 @@ Description:  Print and sort array
 
 #include <iostream>
 #include <vector>
+#include <string>
+#include <sstream>
+
+
 #include "SortInt.h"
+#include "List.h"
+#include "Attributes.h"
+
+
 using namespace std;
 
-enum Attribute { ACC = 0, AGI, BAL, SPD, STA, STR, AGG, ANT, BRA, CRE, DET, FLA, INF, TEA, WOR, CHE, DEF, DEK, FAC, HIT, GTO, PAS, POK, POS, SLA, STI ,WRI};
-const char* getAttribute(enum Attribute attribute)
+//template<typename T>
+class Keyboard
 {
-	switch (attribute)
+public:
+	int getInput() const;
+	bool valid(int input);
+private:
+	bool complete = false;
+
+};
+
+//template<typename T>
+int Keyboard::getInput() const
+{
+	//bool complete = false;
+	string line;
+	int x = 0;
+
+	while (!(cin >> x))
 	{
-	case ACC: return "ACC";
-	case AGI: return "AGI";
-	case BAL: return "BAL";
-	case SPD: return "SPD";
-	case STA: return "STA";
-	case STR: return "STR";
-	case AGG: return "AGG";
-	case ANT: return "ANT";
-	case BRA: return "BRA";
-	case CRE: return "CRE";
-	case DET: return "DET";
-	case FLA: return "FLA";
-	case INF: return "INF";
-	case TEA: return "TEA";
-	case WOR: return "WOR";
-	case CHE: return "CHE";
-	case DEF: return "DEF";
-	case DEK: return "DEK";
-	case FAC: return "FAC";
-	case HIT: return "HIT";
-	case GTO: return "GTO";
-	case PAS: return "PAS";
-	case POK: return "POK";
-	case POS: return "POS";
-	case SLA: return "SLA";
-	case STI: return "STI";
-	case WRI: return "WRI";
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << "Please input proper number between 1-20" << endl;
 	}
+	return x;
+
 }
+
+bool Keyboard::valid(int input)
+{
+	if (cin.fail())
+	{
+		return false;
+	}
+	else
+		return true;
+}
+
+
+
 
 int main()
 {
 	STACK s;
+	Keyboard k;
+	List player;
 	Attribute theAttribute;
-	int val, max = 27;
-	for (int i = 0; i < max; i++)
+
+	player.push_back("Godbout, Felix");
+	player.push_back("Donovan, Ray");
+	player.push_back("Ray, Eddie");
+
+	Iterator pos;
+	for(pos = player.begin(); !pos.equals(player.end()); pos.next())
+		cout << pos.get() << endl;
+
+/*
+	int in;
+	string line;
+	for (int i = 0; i < 27; i++)
 	{
-		theAttribute = Attribute(i);
-		cout << getAttribute(theAttribute) <<": ";
-		cin >> val;
-		s.push(val);
+			theAttribute = Attribute(i);
+			cout << getAttribute(theAttribute) << ": ";
+			while(getline(cin,line))
+			{
+				stringstream ss(line);
+				if (ss >> in)
+				{
+					if ((in > 0)&&(in <= 20))//((ss.eof()))
+					{//sucuess
+						break;
+					}
+				}
+				cout << "   ERROR: not a valid input!" << endl;
+				//reenter input
+				theAttribute = Attribute(i);
+				cout << getAttribute(theAttribute) << ": ";
+			}
+
+			s.push(in);
 	}
 
 	s.print();
 	s.printStats();
 
-	cout << ACC << endl;
+	*/
 
 	system("pause");
 	return 0;
