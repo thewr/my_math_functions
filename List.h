@@ -20,8 +20,10 @@ public:
 	Node(string s);
 private:
 	string data;
+	int tag;
 	Node* prev;
 	Node* next;
+	Node* down;
 	friend class List;
 	friend class Iterator;
 };
@@ -63,8 +65,17 @@ public:
 	*/
 	Iterator end();
 private:
+	/**
+	   Node pointers for player entry
+	*/
 	Node* front;
 	Node* back;
+	int tag;
+	/** 
+	   Node points for record entry
+	*/
+	Node* top;
+	Node* bottom;
 };
 
 class Iterator
@@ -76,9 +87,14 @@ public:
 	Iterator();
 	/**
 	   Looks up the value at a position.
-	   @return the value of the node to whic hthe iterator points
+	   @return the value of the node to which the iterator points to
 	*/
-	string get() const;
+	string getString() const;
+	/**
+	   Looks up the value at a position.
+	   @return the value of the node to which the iterator points to
+	*/
+	int getInt() const;	
 	/** 
 	   Advances the iterator to the next node.
 	*/
@@ -102,6 +118,7 @@ private:
 Node::Node(string s)
 {
 	data = s;
+	//tag = 0;
 	prev = NULL;
 	next = NULL;
 }
@@ -115,6 +132,7 @@ List::List()
 void List::push_back(string s)
 {
 	Node* new_node = new Node(s);
+	new_node->tag = 0;
 	if (back == NULL) /* list is empty */
 	{
 		front = new_node;
@@ -125,6 +143,7 @@ void List::push_back(string s)
 		new_node->prev = back;
 		back->next = new_node;
 		back = new_node;
+		new_node->tag= new_node->prev->tag + 1;
 	}
 }
 
@@ -189,10 +208,16 @@ Iterator::Iterator()
 	back = NULL;
 }
 
-string Iterator::get() const
+string Iterator::getString() const
 {
 	assert(position != NULL);
 	return position->data;
+}
+
+int Iterator::getInt() const
+{
+	assert(position != NULL);
+	return position->tag;
 }
 
 void Iterator::next()
