@@ -4,17 +4,18 @@
 class Math
 {
 public:
-	Math(int* A_) { N = sizeof(A_[0]); cout << N << endl;/* T = new int[N]; SortA(A_);*/ }
-	~Math() {/* delete[] T;*/ }
+	//Math(int* A_) { N = sizeof(A_[0]); cout << N << endl;/* T = new int[N]; SortA(A_);*/ }
+	//~Math() {/* delete[] T;*/ }
 	//void SortA(int* A_);
-	float accumulate(int* A_);
+	float accumulate(int A_[]);
 	float average(int* A_);
 	double stdev(int* A_);
 	double quartile(int* A_, int selection);
+	int length(int* A_);
 	//float mad();
 	bool whole_num(const double & val);
 private:
-	int N;
+	//int N;
 	float sum = 0;
 	//int* T;
 };
@@ -47,39 +48,50 @@ private:
 //	//} cout << endl;
 //}
 
-
-float Math::accumulate(int* A_)
+int Math::length(int* A_)
 {
-	for (int i = 0; i < N; i++)
+	int N = 0;
+	while (A_[N] > 0)
+	{
+		N++;
+	}
+	return N;
+}
+
+float Math::accumulate(int A_[])
+{
+	for (int i = 0; i < length(A_); i++)
 		sum += A_[i];
 	return sum;
 }
 
 float Math::average(int* A_)
 {
-	return sum / N;
+	return sum / length(A_);
 }
 
 double Math::stdev(int* A_)
 {
 	float x_d, x_var_sum = 0;
 	float x_bar = average(A_);
-	for (int i = 0; i < N;i++)
+	for (int i = 0; i < length(A_);i++)
 	{
 		x_d = A_[i] - x_bar;
 		x_var_sum = x_var_sum + pow(x_d, 2.0);
 	}
-	return sqrt(x_var_sum / (float)(N - 1));
+	return sqrt(x_var_sum / (float)(length(A_) - 1));
 }
 
 double Math::quartile(int* A_, int selection)
 {
+	int N = sizeof(A_[0]);
 	int *T;
 	T = new int[N];
 	for (int i = 0; i < N;i++)
 	{
 		T[i] = A_[i];
 	}
+	//cout << endl;
 	//cout << "------------------ sort function evoked --------------------\n";
 	int t;
 	for (int i = 0; i < N; i++)
@@ -94,10 +106,10 @@ double Math::quartile(int* A_, int selection)
 			}
 		}
 	}
-	for (int i = 0; i < N;i++)
-	{
-		cout << T[i] << " ";
-	} cout << endl;
+	//for (int i = 0; i < N;i++)
+	//{
+	//	cout << T[i] << " ";
+	//} cout << endl;
 
 	double k = (0.25*selection)*N;
 	if (selection == 1)

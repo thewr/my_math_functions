@@ -10,6 +10,26 @@ using namespace std;
 class List;
 class Iterator;
 
+struct Categories
+{
+	string name;
+	string role;
+	int tag;
+	int A[27];
+};
+
+//typedef struct categories Categories;
+//
+//void passByReference(Categories *c) 
+//{
+//	string s1, s2;
+//	c->name = s1;
+//	c->role = s2;
+//	
+//}
+
+//struct categories player;
+
 class Node
 {
 public:
@@ -17,10 +37,9 @@ public:
 	    Constructs a node with a given value.
 		@param s the data to store in this node
 	*/
-	Node(string s);
+	Node(string s1, string s2, int* A_);
 private:
-	string data;
-	int tag;
+	Categories data; 
 	Node* prev;
 	Node* next;
 	Node* down;
@@ -39,14 +58,14 @@ public:
 	   Appends an element to the list.
 	   @param s the value to append
 	*/
-	void push_back(string s);
+	void push_back(string s1, string s2, int* A_);
 	/**
 	   Insert an element into the list.
 	   @param iter the position to remove
 	   @return an iterator pointing to the element after the
 	   erased element
 	*/
-	void insert(Iterator iter, string s);
+	void insert(Iterator iter, string s1, string s2, int* A_);
 	/**
 	   Removes an element from the list.
 	   @param i the position to remove
@@ -89,12 +108,7 @@ public:
 	   Looks up the value at a position.
 	   @return the value of the node to which the iterator points to
 	*/
-	string getString() const;
-	/**
-	   Looks up the value at a position.
-	   @return the value of the node to which the iterator points to
-	*/
-	int getInt() const;	
+	Categories get() const;
 	/** 
 	   Advances the iterator to the next node.
 	*/
@@ -115,9 +129,13 @@ private:
 	friend class List;
 };
 
-Node::Node(string s)
+Node::Node(string s1, string s2, int* A_)
 {
-	data = s;
+	
+	data.name = s1;
+	data.role = s2;
+	for (int i = 0; i < 27; i++)
+		data.A[i] = A_[i];
 	//tag = 0;
 	prev = NULL;
 	next = NULL;
@@ -129,10 +147,10 @@ List::List()
 	back = NULL;
 }
 
-void List::push_back(string s)
+void List::push_back(string s1, string s2, int *A_)
 {
-	Node* new_node = new Node(s);
-	new_node->tag = 0;
+	Node* new_node = new Node(s1, s2, A_);
+	new_node->data.tag = 0;
 	if (back == NULL) /* list is empty */
 	{
 		front = new_node;
@@ -143,20 +161,20 @@ void List::push_back(string s)
 		new_node->prev = back;
 		back->next = new_node;
 		back = new_node;
-		new_node->tag= new_node->prev->tag + 1;
+		new_node->data.tag= new_node->prev->data.tag + 1;
 	}
 }
 
-void List::insert(Iterator iter, string s)
+void List::insert(Iterator iter, string s1, string s2, int* A_)
 {
 	if (iter.position == NULL)
 	{
-		push_back(s);
+		push_back(s1, s2, A_);
 		return;
 	}
 	Node* after = iter.position;
 	Node* before = after->prev;
-	Node* new_node = new Node(s);
+	Node* new_node = new Node(s1, s2, A_);
 	new_node->prev = before;
 	new_node->next = after;
 	after->prev = new_node;
@@ -208,16 +226,10 @@ Iterator::Iterator()
 	back = NULL;
 }
 
-string Iterator::getString() const
+Categories Iterator::get() const
 {
 	assert(position != NULL);
 	return position->data;
-}
-
-int Iterator::getInt() const
-{
-	assert(position != NULL);
-	return position->tag;
 }
 
 void Iterator::next()
