@@ -9,11 +9,12 @@ Class Array (constructor, deconstructor, print and sort)
 
 
 
-class STACK
+class Stack
 {
 public:
-	STACK();	//constructor
-	~STACK();		//destructor
+	Stack();	//constructor
+	~Stack();		//destructor
+	void tripple_size();
 	int full();
 	int top();
 	int pop();

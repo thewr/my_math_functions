@@ -10,7 +10,7 @@ Description:  Print and sort array
 #include <fstream>
 #include <vector>
 #include "SortInt.h"
-#include <stack>
+#include <Stack>
 using namespace std;
 
 
@@ -18,13 +18,13 @@ using namespace std;
 /***************************************************************************
 Initialize constructor
 ****************************************************************************/
-STACK::STACK()
+Stack::Stack()
 {
 	capacity = 30;
 	s_top = -1;
 	array_ = new int [capacity];	//allocate array
 
-//LOAD STACK
+//LOAD Stack
 	//int i;
 	//ifstream in;
 	//in.open("mycounts.txt");
@@ -44,17 +44,33 @@ STACK::STACK()
 /***************************************************************************
 Initialize deconstructor
 ****************************************************************************/
-STACK::~STACK()
+Stack::~Stack()
 {
 	delete[] array_;
+}
+
+void Stack::tripple_size()
+{
+	cout << "Stack capacity has been trippled!" << endl;
+	int i;
+
+	capacity *= 3;
+	int *TMP = new int[capacity];
+
+	for (i = s_top; i >= 0; i--)
+	{
+		TMP[i] = array_[i];
+	}
+	delete[] array_;
+	array_ = TMP;
 }
 
 /***************************************************************************
 Initialize print
 ****************************************************************************/
-void STACK::print()
+void Stack::print()
 {
-	cout << "STACK: " << endl;
+	cout << "Stack: " << endl;
 	for (int i = s_top; i >=0; i--)
 		cout << array_[i] << " ";
 
@@ -64,7 +80,7 @@ void STACK::print()
 /***************************************************************************
 Initialize sort
 ****************************************************************************/
-void STACK::sortA()
+void Stack::sortA()
 {
 	//cout << "------------------ sort function evoked --------------------\n";
 	int tmp;
@@ -82,7 +98,7 @@ void STACK::sortA()
 	}
 }
 
-double STACK::quartile(int selection) 
+double Stack::quartile(int selection) 
 {
 	sortA();
 
@@ -126,7 +142,7 @@ double STACK::quartile(int selection)
 
 }
 
-bool STACK::isWhole(const double & val)
+bool Stack::isWhole(const double & val)
 {
 	if (floor(val) == val)
 		return true;
@@ -134,7 +150,7 @@ bool STACK::isWhole(const double & val)
 		return false;
 }
 
-void STACK::printStats()
+void Stack::printStats()
 {
 	cout << "\n\t\t\t" << "------- STATS -------" << endl;
 	cout << "\t\t\t|" << " n = " << s_top+1 << endl;
@@ -151,7 +167,7 @@ void STACK::printStats()
 }
 
 
-float STACK::accumulate()
+float Stack::accumulate()
 {
 	float sum = 0;
 	for (int i = 0; i < size(); i++)
@@ -160,12 +176,12 @@ float STACK::accumulate()
 	return sum;
 }
 
-float STACK::average() 
+float Stack::average() 
 {
 	return accumulate() / (float)size();
 }
 
-double STACK::stdev()
+double Stack::stdev()
 {
 	float x_d, x_var_sum = 0;
 	float x_bar = average();
@@ -177,7 +193,7 @@ double STACK::stdev()
 	return sqrt(x_var_sum/(float)(size()-1));
 }
 
-float STACK::mad()
+float Stack::mad()
 {
 	float *T;
 	T = new float[capacity];
@@ -215,25 +231,30 @@ float STACK::mad()
 	}
 }
 
-void STACK::push(int Element)
+void Stack::push(int Element)
 {
-	if (!full()) 
+	if (!full())
 		array_[++s_top] = Element;
+	else
+	{
+		tripple_size();
+		array_[++s_top] = Element;
+	}
 }
 
-int STACK::pop()
+int Stack::pop()
 {
 	if (!empty()) 
 		return(array_[s_top--]); 
 }
 
-int STACK::top()
+int Stack::top()
 {
 	if (!empty()) 
 		return(array_[s_top]);
 }
 
-int STACK::full()
+int Stack::full()
 {
 	if (s_top == (capacity - 1)) 
 		return 1;

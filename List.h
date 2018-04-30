@@ -1,34 +1,28 @@
 #include <string>
 #include <cassert>
 #include <iostream>
+#include <fstream>
+#include "SortInt.h"
 
 using namespace std;
 
 #ifndef List_h
 #define List_h
 
+class STACK;
 class List;
 class Iterator;
 
 struct Categories
 {
-	string name;
+	string first;
+	string last;
 	string role;
-	int tag;
+	int age;
 	int A[27];
+	double avg = 0;
+	double stdev = 0;
 };
-
-//typedef struct categories Categories;
-//
-//void passByReference(Categories *c) 
-//{
-//	string s1, s2;
-//	c->name = s1;
-//	c->role = s2;
-//	
-//}
-
-//struct categories player;
 
 class Node
 {
@@ -37,7 +31,7 @@ public:
 	    Constructs a node with a given value.
 		@param s the data to store in this node
 	*/
-	Node(string s1, string s2, int* A_);
+	Node(string first_, string last_, string role_, int age_, int* A_);
 private:
 	Categories data; 
 	Node* prev;
@@ -58,20 +52,27 @@ public:
 	   Appends an element to the list.
 	   @param s the value to append
 	*/
-	void push_back(string s1, string s2, int* A_);
+	void push_back(string first_, string last_, string role_, int age_,int* A_);
 	/**
 	   Insert an element into the list.
 	   @param iter the position to remove
 	   @return an iterator pointing to the element after the
 	   erased element
 	*/
-	void insert(Iterator iter, string s1, string s2, int* A_);
+	void insert(Iterator iter, string first_, string last_, string role_, int age_, int* A_);
 	/**
 	   Removes an element from the list.
 	   @param i the position to remove
 	   @return an iterator pointing to the element after the 
 	   erased element
 	*/
+
+	double get_list_avg() { return list_avg; }
+	double get_list_stdev() { return list_stdev; }
+	void load_list(string file);
+	void save_list(string file);
+
+
 	Iterator erase(Iterator i);
 	/**
 	   Gets the beginning of the list.
@@ -89,7 +90,8 @@ private:
 	*/
 	Node* front;
 	Node* back;
-	int tag;
+	double list_avg;
+	double list_stdev;
 	/** 
 	   Node points for record entry
 	*/
@@ -129,11 +131,13 @@ private:
 	friend class List;
 };
 
-Node::Node(string s1, string s2, int* A_)
+Node::Node(string first_, string last_, string role_, int age_, int* A_)
 {
 	
-	data.name = s1;
-	data.role = s2;
+	data.first = first_;
+	data.last = last_;
+	data.role = role_;
+	data.age = age_;
 	for (int i = 0; i < 27; i++)
 		data.A[i] = A_[i];
 	//tag = 0;
@@ -147,34 +151,35 @@ List::List()
 	back = NULL;
 }
 
-void List::push_back(string s1, string s2, int *A_)
+void List::push_back(string first_, string last_, string role_, int age_, int *A_)
 {
-	Node* new_node = new Node(s1, s2, A_);
-	new_node->data.tag = 0;
+	Node* new_node = new Node(first_, last_, role_,age_,A_);
+
 	if (back == NULL) /* list is empty */
 	{
 		front = new_node;
 		back = new_node;
+		//new_node->data.tag = 0;
 	}
 	else
 	{
 		new_node->prev = back;
 		back->next = new_node;
 		back = new_node;
-		new_node->data.tag= new_node->prev->data.tag + 1;
+		//new_node->data.tag= new_node->prev->data.tag + 1;
 	}
 }
 
-void List::insert(Iterator iter, string s1, string s2, int* A_)
+void List::insert(Iterator iter, string first_, string last_, string role_, int age_,int* A_)
 {
 	if (iter.position == NULL)
 	{
-		push_back(s1, s2, A_);
+		push_back(first_, last_, role_, age_, A_);
 		return;
 	}
 	Node* after = iter.position;
 	Node* before = after->prev;
-	Node* new_node = new Node(s1, s2, A_);
+	Node* new_node = new Node(first_, last_, role_, age_, A_);
 	new_node->prev = before;
 	new_node->next = after;
 	after->prev = new_node;
@@ -183,6 +188,76 @@ void List::insert(Iterator iter, string s1, string s2, int* A_)
 	else
 		before->next = new_node;
 }
+
+void List::load_list(string file)
+{
+	ifstream infile;
+	Categories r;
+	Stack s; 
+	infile.open(file);
+	int record_count = 0;
+	cout << "...loading tree from file...\n";
+	if (infile.is_open()) {
+		while (infile >> r.first)//!infile.eof())
+		{
+			//getline(infile, line);
+			if (!r.first.empty())  //ignore blanks
+			{
+				infile >> r.last >> r.role >> r.age;
+
+				for (unsigned int i = 0; i < 27; i++)
+				{
+					infile >> r.A[i];
+					s.push(r.A[i]);
+				}
+				record_count++;
+				push_back(r.first, r.last, r.role, r.age, r.A);
+				/*r.avg = s.average() + r.avg;
+				r.stdev = s.stdev() + r.stdev;*/
+			}
+		}
+	}
+	else
+		cout << "Error opening " << file << endl;
+
+	cout << "Records loaded: " << record_count++ << endl;
+	list_avg = s.average();//r.avg / record_count;
+	list_stdev = s.stdev();//r.stdev / record_count;
+	infile.close();
+}
+
+void List::save_list(string file)
+{
+	ofstream outold;
+	fstream outnew;
+	outnew.open(file);
+	Categories r;
+	cout << "...writing tree element to file...\n";
+
+	//clear original content
+	outold.open(file, ofstream::out | ofstream::trunc);
+	outold.close();
+
+	//write content
+	Iterator pos;
+	if (outnew.is_open())
+	{
+		pos = begin();
+		while (!pos.equals(end()))
+		{
+			outnew << pos.get().first << " " << pos.get().last << " " << pos.get().role << " " << pos.get().age << " ";
+			for (int i = 0; i < 27; i++) {
+				outnew << pos.get().A[i] << " ";
+			}
+			outnew << endl;
+			pos.next();
+		}
+		outnew.close();
+	}
+
+}
+
+
 
 Iterator List::erase(Iterator i)
 {

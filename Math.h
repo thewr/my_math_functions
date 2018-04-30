@@ -1,12 +1,15 @@
 #ifndef Math_h
 #define Math_h
 
+template<class T, size_t N>
+constexpr size_t size(T(&)[N]) { return N; }
+
 class Math
 {
 public:
-	//Math(int* A_) { N = sizeof(A_[0]); cout << N << endl;/* T = new int[N]; SortA(A_);*/ }
-	//~Math() {/* delete[] T;*/ }
-	//void SortA(int* A_);
+	Math() { CAPACITY = 30; T = new int[CAPACITY]; }
+	~Math() {delete[] T;}
+	void SortA(int *A_,int N);
 	float accumulate(int A_[]);
 	float average(int* A_);
 	double stdev(int* A_);
@@ -15,38 +18,40 @@ public:
 	//float mad();
 	bool whole_num(const double & val);
 private:
-	//int N;
 	float sum = 0;
-	//int* T;
+	int CAPACITY;
+	int *T;
 };
 
-//void Math::SortA(int* A_)
-//{
-//	int *T;
-//	T = new int[N];
-//	for (int i = 0; i < N;i++)
-//	{
-//		T[i] = A_[i];
-//	}
-//	//cout << "------------------ sort function evoked --------------------\n";
-//	int t;
-//	for (int i = 0; i < N; i++)
-//	{
-//		for (int j = 0; j < N; j++)
-//		{
-//			if (T[i] < T[j])
-//			{
-//				t = T[i];     //address of *ai given to tmp
-//				T[i] = T[j];	   //address of *ai given to *aj
-//				T[j] = t;	   //address of tmp given to *aj
-//			}
-//		}
-//	}
-//	//for (int i = 0; i < N;i++)
-//	//{
-//	//	cout << T[i] << " ";
-//	//} cout << endl;
-//}
+void Math::SortA(int *A_,int N)
+{
+	CAPACITY = N;
+	cout << "CAPACITY " << CAPACITY << endl;
+	delete[] T; 
+	T = new int[CAPACITY];
+	for (int i = 0; i < CAPACITY;i++)
+	{
+		T[i] = A_[i];
+	}
+	//cout << "------------------ sort function evoked --------------------\n";
+	int t;
+	for (int i = 0; i < CAPACITY; i++)
+	{
+		for (int j = 0; j < CAPACITY; j++)
+		{
+			if (T[i] < T[j])
+			{
+				t = T[i];     //address of *ai given to tmp
+				T[i] = T[j];	   //address of *ai given to *aj
+				T[j] = t;	   //address of tmp given to *aj
+			}
+		}
+	}
+	//for (int i = 0; i < CAPACITY;i++)
+	//{
+	//	cout << T[i] << " ";
+	//} cout << endl;
+}
 
 int Math::length(int* A_)
 {
@@ -85,33 +90,31 @@ double Math::stdev(int* A_)
 double Math::quartile(int* A_, int selection)
 {
 	int N = sizeof(A_[0]);
-	int *T;
-	T = new int[N];
-	for (int i = 0; i < N;i++)
-	{
-		T[i] = A_[i];
-	}
-	//cout << endl;
-	//cout << "------------------ sort function evoked --------------------\n";
-	int t;
-	for (int i = 0; i < N; i++)
-	{
-		for (int j = 0; j < N; j++)
-		{
-			if (T[i] < T[j])
-			{
-				t = T[i];     //address of *ai given to tmp
-				T[i] = T[j];	   //address of *ai given to *aj
-				T[j] = t;	   //address of tmp given to *aj
-			}
-		}
-	}
+	//int *T = new int[N];
 	//for (int i = 0; i < N;i++)
 	//{
-	//	cout << T[i] << " ";
-	//} cout << endl;
+	//	T[i] = A_[i];
+	//}
+	//////cout << endl;
+	//////cout << "------------------ sort function evoked --------------------\n";
+	//int t;
+	//for (int i = 0; i < N; i++)
+	//{
+	//	for (int j = 0; j < N; j++)
+	//	{
+	//		if (T[i] < T[j])
+	//		{
+	//			t = T[i];     //address of *ai given to tmp
+	//			T[i] = T[j];	   //address of *ai given to *aj
+	//			T[j] = t;	   //address of tmp given to *aj
+	//		}
+	//	}
+	//}
 
-	double k = (0.25*selection)*N;
+
+	double k = (0.25*selection)*CAPACITY;
+	cout << selection << " k = " << k << " " << CAPACITY << endl;
+
 	if (selection == 1)
 	{
 		double Q1;
