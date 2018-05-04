@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include "SortInt.h"
+#include "Attributes.h"
 
 using namespace std;
 
@@ -15,13 +16,8 @@ class Iterator;
 
 struct Categories
 {
-	string first;
-	string last;
-	string role;
-	int age;
+	string first, last, role, dob;
 	int A[27];
-	double avg = 0;
-	double stdev = 0;
 };
 
 class Node
@@ -31,9 +27,9 @@ public:
 	    Constructs a node with a given value.
 		@param s the data to store in this node
 	*/
-	Node(string first_, string last_, string role_, int age_, int* A_);
-private:
+	Node(string first_, string last_, string role_, string dob_, int* A_);
 	Categories data; 
+private:
 	Node* prev;
 	Node* next;
 	Node* down;
@@ -52,32 +48,36 @@ public:
 	   Appends an element to the list.
 	   @param s the value to append
 	*/
-	void push_back(string first_, string last_, string role_, int age_,int* A_);
+	void push_back(string first_, string last_, string role_, string dob_, int* A_);
 	/**
 	   Insert an element into the list.
 	   @param iter the position to remove
 	   @return an iterator pointing to the element after the
 	   erased element
 	*/
-	void insert(Iterator iter, string first_, string last_, string role_, int age_, int* A_);
+	void insert(Iterator iter, string first_, string last_, string role_, string dob_, int* A_);
 	/**
 	   Removes an element from the list.
 	   @param i the position to remove
 	   @return an iterator pointing to the element after the 
 	   erased element
 	*/
-
-	double get_list_avg() { return list_avg; }
-	double get_list_stdev() { return list_stdev; }
+	double pop_avg() { return list_avg; }
+	double pop_stdev() { return list_stdev; }
+	double pop_count() { return list_count; }
 	void load_list(string file);
 	void save_list(string file);
 
+	Node* search_list(Node*, string first_, string last_);
+	Node* search_list(string first_,string last_);
+	
 
 	Iterator erase(Iterator i);
 	/**
 	   Gets the beginning of the list.
 	   @return an iterator poinint go the beginning of the list
 	*/
+
 	Iterator begin();
 	/** 
 	   Gets the past-the-end position of the list.
@@ -92,6 +92,7 @@ private:
 	Node* back;
 	double list_avg;
 	double list_stdev;
+	unsigned long list_count;
 	/** 
 	   Node points for record entry
 	*/
@@ -131,13 +132,12 @@ private:
 	friend class List;
 };
 
-Node::Node(string first_, string last_, string role_, int age_, int* A_)
-{
-	
+Node::Node(string first_, string last_, string role_, string dob_, int* A_)
+{	
 	data.first = first_;
 	data.last = last_;
 	data.role = role_;
-	data.age = age_;
+	data.dob = dob_;
 	for (int i = 0; i < 27; i++)
 		data.A[i] = A_[i];
 	//tag = 0;
@@ -151,9 +151,9 @@ List::List()
 	back = NULL;
 }
 
-void List::push_back(string first_, string last_, string role_, int age_, int *A_)
+void List::push_back(string first_, string last_, string role_, string dob_, int *A_)
 {
-	Node* new_node = new Node(first_, last_, role_,age_,A_);
+	Node* new_node = new Node(first_, last_, role_,dob_,A_);
 
 	if (back == NULL) /* list is empty */
 	{
@@ -170,16 +170,16 @@ void List::push_back(string first_, string last_, string role_, int age_, int *A
 	}
 }
 
-void List::insert(Iterator iter, string first_, string last_, string role_, int age_,int* A_)
+void List::insert(Iterator iter, string first_, string last_, string role_, string dob_,int* A_)
 {
 	if (iter.position == NULL)
 	{
-		push_back(first_, last_, role_, age_, A_);
+		push_back(first_, last_, role_, dob_, A_);
 		return;
 	}
 	Node* after = iter.position;
 	Node* before = after->prev;
-	Node* new_node = new Node(first_, last_, role_, age_, A_);
+	Node* new_node = new Node(first_, last_, role_, dob_, A_);
 	new_node->prev = before;
 	new_node->next = after;
 	after->prev = new_node;
@@ -203,17 +203,16 @@ void List::load_list(string file)
 			//getline(infile, line);
 			if (!r.first.empty())  //ignore blanks
 			{
-				infile >> r.last >> r.role >> r.age;
+				infile >> r.last >> r.role >> r.dob;
 
 				for (unsigned int i = 0; i < 27; i++)
 				{
 					infile >> r.A[i];
-					s.push(r.A[i]);
+					if((i != FAC)&&(i != AGG))
+						s.push(r.A[i]);
 				}
 				record_count++;
-				push_back(r.first, r.last, r.role, r.age, r.A);
-				/*r.avg = s.average() + r.avg;
-				r.stdev = s.stdev() + r.stdev;*/
+				push_back(r.first, r.last, r.role, r.dob, r.A);
 			}
 		}
 	}
@@ -221,8 +220,9 @@ void List::load_list(string file)
 		cout << "Error opening " << file << endl;
 
 	cout << "Records loaded: " << record_count++ << endl;
-	list_avg = s.average();//r.avg / record_count;
-	list_stdev = s.stdev();//r.stdev / record_count;
+	list_avg = s.average();
+	list_stdev = s.stdev();
+	list_count = s.size();
 	infile.close();
 }
 
@@ -239,25 +239,41 @@ void List::save_list(string file)
 	outold.close();
 
 	//write content
-	Iterator pos;
+	Iterator iter;
 	if (outnew.is_open())
 	{
-		pos = begin();
-		while (!pos.equals(end()))
+		iter = begin();
+		while (!iter.equals(end()))
 		{
-			outnew << pos.get().first << " " << pos.get().last << " " << pos.get().role << " " << pos.get().age << " ";
+			outnew << iter.get().first << " " << iter.get().last << " " << iter.get().role << " " << iter.get().dob << " ";
 			for (int i = 0; i < 27; i++) {
-				outnew << pos.get().A[i] << " ";
+				outnew << iter.get().A[i] << " ";
 			}
 			outnew << endl;
-			pos.next();
+			iter.next();
 		}
 		outnew.close();
 	}
 
 }
 
+Node* List::search_list(string first_, string last_)
+{
+	return search_list(front, first_, last_);
+}
 
+Node* List::search_list(Node* loc_ptr, string first_, string last_)
+{
+	if (loc_ptr != 0)
+	{
+		if (((loc_ptr->data.first == first_)) && ((loc_ptr->data.last == last_)))
+			return loc_ptr;
+		else
+			return search_list(loc_ptr->next, first_, last_);
+	}
+	else
+		return loc_ptr;
+}
 
 Iterator List::erase(Iterator i)
 {

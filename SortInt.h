@@ -1,3 +1,14 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <sstream>
+#include <stdlib.h>
+#include <iomanip>
+#include <conio.h>
+#include <fstream>
+#include <stdio.h>
+
+
 #ifndef SortInt_h
 #define SortInt_h
 //#include <iostream>
@@ -42,6 +53,7 @@ private:
 	int capacity;
 	int s_top;
 };
+
 
 
 #endif
