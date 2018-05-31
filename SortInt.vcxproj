@@ -115,14 +115,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="SortInt.cpp" />
-    <ClCompile Include="SortIntDriver.cpp" />
+    <ClCompile Include="Sort_Driver.cpp" />
+    <ClCompile Include="DatabaseDriver.cpp" />
+    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Attributes.h" />
+    <ClInclude Include="Constants.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Math.h" />
-    <ClInclude Include="SortInt.h" />
+    <ClInclude Include="Sort.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

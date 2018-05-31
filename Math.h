@@ -7,6 +7,8 @@ constexpr size_t size(T(&)[N]) { return N; }
 class Math
 {
 public:
+	//Math(A);  load arrayA_COV here
+	//void jacobi..
 	Math() { CAPACITY = 30; T = new int[CAPACITY]; }
 	~Math() {delete[] T;}
 	void SortA(int *A_,int N);
@@ -15,6 +17,8 @@ public:
 	double stdev(int* A_);
 	double quartile(int* A_, int selection);
 	int length(int* A_);
+	int sgn(double val) const;
+	float distance(float x1, float y1, float x2, float y2);
 	//float mad();
 	bool whole_num(const double & val);
 private:
@@ -22,6 +26,32 @@ private:
 	int CAPACITY;
 	int *T;
 };
+
+int Math::sgn(double val) const
+{
+	if (val > 0)
+		return 1;
+	else if (val < 0)
+		return -1;
+	else
+		return 0;
+}
+
+inline float Math::distance(float x1, float y1, float x2, float y2)
+{
+	float result; //local variable
+	result = pow(x2 - x1, 2.0);
+	result += pow(y2 - y1, 2.0);
+	return sqrt(result);
+}
+
+double distance(float x1, float y1, float x2, float y2)
+{
+	double result; //local variable
+	result = pow(x2 - x1, 2.0);
+	result += pow(y2 - y1, 2.0);
+	return sqrt(result);
+}
 
 void Math::SortA(int *A_,int N)
 {
@@ -77,8 +107,8 @@ float Math::average(int* A_)
 
 double Math::stdev(int* A_)
 {
-	float x_d, x_var_sum = 0;
-	float x_bar = average(A_);
+	double x_d, x_var_sum = 0;
+	double x_bar = average(A_);
 	for (int i = 0; i < length(A_);i++)
 	{
 		x_d = A_[i] - x_bar;

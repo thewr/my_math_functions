@@ -2,7 +2,7 @@
 #include <cassert>
 #include <iostream>
 #include <fstream>
-#include "SortInt.h"
+#include "Sort.h"
 #include "Attributes.h"
 
 using namespace std;
@@ -10,14 +10,83 @@ using namespace std;
 #ifndef List_h
 #define List_h
 
-class STACK;
 class List;
 class Iterator;
+
+//class LD 
+//{
+//public:
+//	//unsigned int compare(const string &s1, const string &s2);
+//
+//	//double Calculate_Cost() const;
+//	//float dist(float x1, float y1, float x2, float y2);
+//	int sgn(double val) const;
+//
+//private:
+//	int minimum(int a, int b, int c);
+//};
+//
+//int LD::minimum(int a, int b, int c)
+//{
+//	int min;
+//	min = a;
+//	if (b < min)
+//		min = b;
+//	if (c < min)
+//		min = c;
+//
+//	return min;
+//}
+
+//float LD::dist(float x1, float y1, float x2, float y2)
+//{
+//	float result; //local variable
+//	result = pow(x2 - x1, 2.0);
+//	result += pow(y2 - y1, 2.0);
+//	return sqrt(result);
+//}
+
+//unsigned int LD::pull(const string &s1, const string &s2)
+//{
+//	const std::size_t len1 = s1.size(), len2 = s2.size();
+//	std::vector<unsigned int> col(len2 + 1), prevCol(len2 + 1);
+//
+//	for (unsigned int i = 0; i < prevCol.size(); i++)
+//		prevCol[i] = i;
+//	for (unsigned int i = 0; i < len1; i++) {
+//		col[0] = i + 1;
+//		for (unsigned int j = 0; j < len2; j++)
+//			// note that std::min({arg1, arg2, arg3}) works only in C++11,
+//			// for C++98 use std::min(std::min(arg1, arg2), arg3)
+//			col[j + 1] = minimum(prevCol[1 + j] + 1, col[j] + 1, prevCol[j] + (s1[i] == s2[j] ? 0 : 1));
+//		col.swap(prevCol);
+//	}
+//	return prevCol[len2];
+//}
+
+//int LD::sgn(double val) const
+//{
+//	if (val > 0)
+//	{
+//		return 1;
+//	}
+//	else if (val < 0)
+//	{
+//		return -1;
+//	}
+//	else
+//	{
+//		return 0;
+//	}
+//}
+
 
 struct Categories
 {
 	string first, last, role, dob;
 	int A[27];
+	int tag;
+	int grade;
 };
 
 class Node
@@ -108,10 +177,15 @@ public:
 	*/
 	Iterator();
 	/**
-	   Looks up the value at a position.
+	   gets values at position.
 	   @return the value of the node to which the iterator points to
 	*/
 	Categories get() const;
+	/**
+		Sets a value at position.
+		@return the value of the node to which the iterator points to
+	*/
+	Categories set(int) const;
 	/** 
 	   Advances the iterator to the next node.
 	*/
@@ -140,7 +214,6 @@ Node::Node(string first_, string last_, string role_, string dob_, int* A_)
 	data.dob = dob_;
 	for (int i = 0; i < 27; i++)
 		data.A[i] = A_[i];
-	//tag = 0;
 	prev = NULL;
 	next = NULL;
 }
@@ -159,14 +232,14 @@ void List::push_back(string first_, string last_, string role_, string dob_, int
 	{
 		front = new_node;
 		back = new_node;
-		//new_node->data.tag = 0;
+		new_node->data.tag = 0;
 	}
 	else
 	{
 		new_node->prev = back;
 		back->next = new_node;
 		back = new_node;
-		//new_node->data.tag= new_node->prev->data.tag + 1;
+		new_node->data.tag= new_node->prev->data.tag + 1;
 	}
 }
 
@@ -193,7 +266,7 @@ void List::load_list(string file)
 {
 	ifstream infile;
 	Categories r;
-	Stack s; 
+	Stack<int> s; 
 	infile.open(file);
 	int record_count = 0;
 	cout << "...loading tree from file...\n";
@@ -222,7 +295,7 @@ void List::load_list(string file)
 	cout << "Records loaded: " << record_count++ << endl;
 	list_avg = s.average();
 	list_stdev = s.stdev();
-	list_count = s.size();
+	list_count = record_count;
 	infile.close();
 }
 
@@ -257,6 +330,9 @@ void List::save_list(string file)
 
 }
 
+
+class LD;
+
 Node* List::search_list(string first_, string last_)
 {
 	return search_list(front, first_, last_);
@@ -264,6 +340,8 @@ Node* List::search_list(string first_, string last_)
 
 Node* List::search_list(Node* loc_ptr, string first_, string last_)
 {
+	//LD k;
+	//k.compare(loc_ptr->data.first, first_);
 	if (loc_ptr != 0)
 	{
 		if (((loc_ptr->data.first == first_)) && ((loc_ptr->data.last == last_)))
@@ -322,6 +400,13 @@ Categories Iterator::get() const
 	assert(position != NULL);
 	return position->data;
 }
+Categories Iterator::set(int VAL) const
+{
+	assert(position != NULL);
+	position->data.grade = VAL;
+	return (position->data);
+}
+
 
 void Iterator::next()
 {
